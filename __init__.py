@@ -1,4 +1,3 @@
-from slre import RemoteSelenium
 
 
 
