@@ -1,4 +1,4 @@
-from setuptools Import setup
+from setuptools import setup
 
 setup(
     name='slre',
