@@ -33,7 +33,7 @@ class RemoteSelenium():
         try:
             self.driver = webdriver.Chrome(chrome_driver, options=chrome_options)
         except selenium.common.exceptions.WebDriverException as e:
-            selenium.common.exceptions.WebDriverException("Please Download Chrome Driver And Place in driver folder ")
+            raise selenium.common.exceptions.WebDriverException("Please Download Chrome Driver And Place in driver folder ")
         self.driver.get(beginurl)
         self.soup = BeautifulSoup(self.driver.page_source, "html.parser")
 
