@@ -172,9 +172,9 @@ def download_driver():
         f.write(r.content)
 # unzip
 
-    with zipfile.ZipFile('{0}/driver/chromedriver.zip'.format(currdir), 'r') as zip_file:
-        zip_file.extractall('{0}/driver'.format(currdir))
-    os.remove('{}/driver/chromedriver.zip'.format(currdir))
+    with zipfile.ZipFile('{0}/driver/chromedriver.zip'.format(os.getcwd()), 'r') as zip_file:
+        zip_file.extractall('{0}/driver'.format(os.getcwd()))
+    os.remove('{}/driver/chromedriver.zip'.format(os.getcwd()))
     print("Download Chrome Driver in driver folder")
     return "Download Chrome Driver in driver folder"
 
