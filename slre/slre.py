@@ -13,7 +13,10 @@ import psutil
 import sys
 
 
-chrome_driver = os.path.join(os.getcwd(), 'driver', 'chromedriver')
+if sys.platform == 'win32':
+    chrome_driver = os.path.join(os.getcwd(), 'driver', 'chromedriver.exe')
+else:
+    chrome_driver = os.path.join(os.getcwd(), 'driver', 'chromedriver')
 chrome_profile = os.path.join(os.getcwd(), 'profile')
 if sys.platform == 'win32':
     google_command_string = 'START chrome.exe --remote-debugging-port=9223 --user-data-dir={0}'.format(chrome_profile)
@@ -152,24 +155,29 @@ class RemoteSelenium():
         with open(filename, 'w', encoding='utf-8') as f:
             f.write(str(soup))
 
-
-
-
 def download_driver():
-    if sys.platform == 'win32':
-        return "Please Make Sure Driver is download in driver folder"
     if os.path.exists(chrome_driver):
         print("Chrome Driver Already in Folder")
         return "Chrome Driver Already in Folder"
-
-    chrome_version = subprocess.check_output(
-        ['google-chrome', '--version']).decode("utf-8").replace('Google Chrome', '').strip()
-    download_string = 'https://chromedriver.storage.googleapis.com/{0}/chromedriver_linux64.zip'.format(
-        chrome_version)
-    print("Driver will be downloaded from {0} :".format(download_string))
-    r = requests.get(download_string)
-    with open('{}/driver/chromedriver.zip'.format(os.getcwd()), 'wb') as f:
-        f.write(r.content)
+    if sys.platform == 'win32':
+        # print("Downlod br")
+        # ver_parse = Dispatch('Scripting.FileSystemObject')
+        # info = ver_parse.GetFileVersion(r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")
+        # download_link = 'https://chromedriver.storage.googleapis.com/{0}/chromedriver_win32.zip'.format(info)
+        # input(download_link)
+        # r = requests.get(download_link)
+        # with open('{}/driver/chromedriver.zip'.format(os.getcwd()), 'wb') as f:
+        #     f.write(r.content)
+        pass
+    else:
+        chrome_version = subprocess.check_output(
+            ['google-chrome', '--version']).decode("utf-8").replace('Google Chrome', '').strip()
+        download_string = 'https://chromedriver.storage.googleapis.com/{0}/chromedriver_linux64.zip'.format(
+            chrome_version)
+        print("Driver will be downloaded from {0} :".format(download_string))
+        r = requests.get(download_string)
+        with open('{}/driver/chromedriver.zip'.format(os.getcwd()), 'wb') as f:
+            f.write(r.content)
 # unzip
 
     with zipfile.ZipFile('{0}/driver/chromedriver.zip'.format(os.getcwd()), 'r') as zip_file:
@@ -204,4 +212,5 @@ def launch_chrome_development():
 
 if __name__ == '__main__':
     rs = RemoteSelenium()
-    rs.driver.get('https://www.youtube.com')
+    rs.driver.get('https://www.google.com')
+    rs.driver.quit()
