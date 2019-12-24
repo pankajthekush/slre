@@ -1,5 +1,6 @@
 from selenium import webdriver
 import selenium.common.exceptions
+from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import random
@@ -11,6 +12,7 @@ import os
 import stat
 import psutil
 import sys
+import shutil
 
 
 if sys.platform == 'win32':
@@ -22,13 +24,15 @@ if sys.platform == 'win32':
     google_command_string = 'START chrome.exe --remote-debugging-port=9223 --user-data-dir={0}'.format(chrome_profile)
 else:
     google_command_string = 'google-chrome --remote-debugging-port=9223 --user-data-dir={0} &>/dev/null &'.format(chrome_profile)
-print(chrome_profile)
+
 
 
 class RemoteSelenium():
-    def __init__(self, beginurl='https://www.google.com'):
+    def __init__(self,delete_profile = False):
+
+        if delete_profile:
+            quit_chrome_new_profile(chrome_profile)
         self.check_create_folders()
-        download_driver()
         launch_chrome_development()
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_experimental_option(
@@ -37,8 +41,8 @@ class RemoteSelenium():
             self.driver = webdriver.Chrome(chrome_driver, options=chrome_options)
         except selenium.common.exceptions.WebDriverException as e:
             raise selenium.common.exceptions.WebDriverException("Please Download Chrome Driver And Place in driver folder ")
-        self.driver.get(beginurl)
         self.soup = BeautifulSoup(self.driver.page_source, "html.parser")
+
 
     def check_create_folders(self):
         if os.path.exists(os.path.join(os.getcwd(), 'driver')):
@@ -58,7 +62,7 @@ class RemoteSelenium():
         self.soup = soup
         return soup
 
-    def getall_links(self, attr_name=None, attr_value=None, tagname='a', joinurls=False):
+    def getall_links(self, attr_name=None, attr_value=None, tagname='a', joinurls=True):
         soup = self.getsoup()
         all_links = []
         if attr_name and not attr_value:
@@ -125,16 +129,17 @@ class RemoteSelenium():
         else:
             return True
 
-    def navigate_to_next_page(self, next_page_tag, next_page_attrib_name, next_page_attrib_value):
-        soup = self.getsoup()
-        next_pagae_element = soup.find(
-            next_page_tag, attrs={next_page_attrib_name: next_page_attrib_value})
-        next_pagae_element = next_pagae_element.find('a')['href']
-        next_pagae_element = urljoin(
-            self.driver.current_url, next_pagae_element)
-        self.driver.get(next_pagae_element)
-        if self.handle_captcha():
-            time.sleep(random.randint(5, 10))
+    def click_by_text(self, next_page_text):
+        nextpage_link = self.driver.find_element_by_link_text(next_page_text)
+        nextpage_link.click()
+
+    def click_by_css(self,css_selector):
+        element = self.driver.find_element_by_css_selector(css_selector)
+        element.click()
+    def set_text(self,tagname , attributes =None):
+        #tbox = self.driver.find_elements_by_css_selector(f'{tagname}[]')
+        pass
+    # box= rs.driver.find_element_by_css_selector('input[id="twotabsearchtextbox"]')
 
     def random_website(self, driver=None):
         # This will navigate to other websites sometime
@@ -154,37 +159,6 @@ class RemoteSelenium():
             soup = self.getsoup()
         with open(filename, 'w', encoding='utf-8') as f:
             f.write(str(soup))
-
-def download_driver():
-    if os.path.exists(chrome_driver):
-        print("Chrome Driver Already in Folder")
-        return "Chrome Driver Already in Folder"
-    if sys.platform == 'win32':
-        # print("Downlod br")
-        # ver_parse = Dispatch('Scripting.FileSystemObject')
-        # info = ver_parse.GetFileVersion(r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe")
-        # download_link = 'https://chromedriver.storage.googleapis.com/{0}/chromedriver_win32.zip'.format(info)
-        # input(download_link)
-        # r = requests.get(download_link)
-        # with open('{}/driver/chromedriver.zip'.format(os.getcwd()), 'wb') as f:
-        #     f.write(r.content)
-        pass
-    else:
-        chrome_version = subprocess.check_output(
-            ['google-chrome', '--version']).decode("utf-8").replace('Google Chrome', '').strip()
-        download_string = 'https://chromedriver.storage.googleapis.com/{0}/chromedriver_linux64.zip'.format(
-            chrome_version)
-        print("Driver will be downloaded from {0} :".format(download_string))
-        r = requests.get(download_string)
-        with open('{}/driver/chromedriver.zip'.format(os.getcwd()), 'wb') as f:
-            f.write(r.content)
-# unzip
-
-    with zipfile.ZipFile('{0}/driver/chromedriver.zip'.format(os.getcwd()), 'r') as zip_file:
-        zip_file.extractall('{0}/driver'.format(os.getcwd()))
-    os.remove('{}/driver/chromedriver.zip'.format(os.getcwd()))
-    print("Download Chrome Driver in driver folder")
-    return "Download Chrome Driver in driver folder"
 
 
 def launch_chrome_development():
@@ -209,8 +183,43 @@ def launch_chrome_development():
         print("Chrome Instance Already Running")
         return "Chrome Instance Already Running"
 
+def quit_chrome_new_profile(profilename):
+
+    all_process = list(psutil.process_iter())
+    if sys.platform == 'win32':
+        run_status = 'chrome.exe' in (p.name() for p in all_process)
+    else:
+        run_status = 'chrome' in (p.name() for p in all_process)
+    print(run_status)
+
+    #If chrome is not running then do nothing
+    if run_status:
+        pass
+    else:
+        if os.path.exists(os.path.join(os.getcwd(), profilename)):
+            shutil.rmtree(os.path.join(os.getcwd(), profilename))
+        else:
+            pass
+        sys.exit(0)
+    
+
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9223")
+    try:
+        driver = webdriver.Chrome(chrome_driver, options=chrome_options)
+        driver.close()
+        driver.quit()
+    except selenium.common.exceptions.WebDriverException as e:
+        raise selenium.common.exceptions.WebDriverException("Please Download Chrome Driver And Place in driver folder ")
+    
+    time.sleep(3)
+    if os.path.exists(os.path.join(os.getcwd(), profilename)):
+        shutil.rmtree(os.path.join(os.getcwd(), profilename))
+    else:
+        pass
+
 
 if __name__ == '__main__':
-    rs = RemoteSelenium()
-    rs.driver.get('https://www.google.com')
-    rs.driver.quit()
+    rs = RemoteSelenium(delete_profile=True)
+
+    
