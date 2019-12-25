@@ -168,7 +168,7 @@ def launch_chrome_development():
         run_status = 'chrome.exe' in (p.name() for p in all_process)
     else:
         run_status = 'chrome' in (p.name() for p in all_process)
-    print(run_status)
+    #print(run_status)
 
     if sys.platform == 'win32':
         pass
@@ -190,7 +190,7 @@ def quit_chrome_new_profile(profilename):
         run_status = 'chrome.exe' in (p.name() for p in all_process)
     else:
         run_status = 'chrome' in (p.name() for p in all_process)
-    print(run_status)
+    #print(run_status)
 
     #If chrome is not running then do nothing
     if run_status:
