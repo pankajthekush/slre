@@ -200,7 +200,7 @@ def quit_chrome_new_profile(profilename):
             shutil.rmtree(os.path.join(os.getcwd(), profilename))
         else:
             pass
-        sys.exit(0)
+        return
     
 
     chrome_options = webdriver.ChromeOptions()
@@ -210,7 +210,7 @@ def quit_chrome_new_profile(profilename):
         driver.close()
         driver.quit()
     except selenium.common.exceptions.WebDriverException as e:
-        raise selenium.common.exceptions.WebDriverException("Please Download Chrome Driver And Place in driver folder ")
+        raise selenium.common.exceptions.WebDriverException("Please Download Chrome Driver And Place in driver folder ") 
     
     time.sleep(3)
     if os.path.exists(os.path.join(os.getcwd(), profilename)):
@@ -220,6 +220,6 @@ def quit_chrome_new_profile(profilename):
 
 
 if __name__ == '__main__':
-    rs = RemoteSelenium(delete_profile=True)
+    rs = RemoteSelenium()
 
     
