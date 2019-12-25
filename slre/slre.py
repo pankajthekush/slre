@@ -220,6 +220,6 @@ def quit_chrome_new_profile(profilename):
 
 
 if __name__ == '__main__':
-    rs = RemoteSelenium()
+    rs = RemoteSelenium(True)
 
     
