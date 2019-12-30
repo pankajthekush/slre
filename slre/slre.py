@@ -62,103 +62,10 @@ class RemoteSelenium():
         self.soup = soup
         return soup
 
-    def getall_links(self, attr_name=None, attr_value=None, tagname='a', joinurls=True):
-        soup = self.getsoup()
-        all_links = []
-        if attr_name and not attr_value:
-            raise ValueError
-        elif attr_value and not attr_name:
-            raise ValueError
-
-        if attr_name is None and attr_value is None:
-            all_raw_data = soup.find_all(tagname)
-            for link in all_raw_data:
-                try:
-                    ex_link = link['href']
-                    all_links.append(ex_link)
-                except KeyError:
-                    pass
-                    # No url
-            if joinurls:
-                return set([urljoin(self.driver.current_url, link) for link in all_links])
-            return set(all_links)
-
-        elif attr_name and attr_value:
-            all_raw_data = soup.find_all(
-                tagname, attrs={attr_name: attr_value})
-            for link in all_raw_data:
-                try:
-                    ex_link = link['href']
-                    all_links.append(ex_link)
-                except KeyError:
-                    pass
-            if joinurls:
-                return set([urljoin(self.driver.current_url, link) for link in all_links])
-            return set(all_links)
-
-    def textavailable(self, text_to_find):
-        soup = self.getsoup()
-        visible_text = u"".join(t.strip().lower()
-                                for t in soup.findAll(text=True))
-        return text_to_find.lower() in visible_text.lower()
-
-    def get_one_element_by_attribute(self, tagname, attribute_name=None, attribute_value=None, soup=None):
-        if soup is None:
-            soup = self.getsoup()
-        if attribute_name and not attribute_value:
-            return ValueError
-        elif attribute_value and not attribute_name:
-            return ValueError
-        elif tagname is None:
-            return ValueError
-        if tagname and attribute_name and attribute_value:
-            try:
-                return soup.find(tagname, attrs={attribute_name: attribute_value}).text.strip()
-            except AttributeError:
-                return None
-        elif tagname and not attribute_name and not attribute_value:
-            try:
-                return soup.find(tagname).text.strip()
-            except AttributeError:
-                return None
-
-    def handle_captcha(self):
-        if self.textavailable('think you were a bot'):
-            input("Bot Detection Triggered , Please Fix")
-            self.handle_captcha()
-        else:
-            return True
-
-    def click_by_text(self, next_page_text):
-        nextpage_link = self.driver.find_element_by_link_text(next_page_text)
-        nextpage_link.click()
-
-    def click_by_css(self,css_selector):
-        element = self.driver.find_element_by_css_selector(css_selector)
-        element.click()
-    def set_text(self,tagname , attributes =None):
-        #tbox = self.driver.find_elements_by_css_selector(f'{tagname}[]')
-        pass
-    # box= rs.driver.find_element_by_css_selector('input[id="twotabsearchtextbox"]')
-
-    def random_website(self, driver=None):
-        # This will navigate to other websites sometime
-        ghost_links = ''
-        with open('ghostlinks.txt', 'r') as file:
-            file_data = file.read()
-            ghost_links = file_data.split(',')
-        should_launch = bool(random.getrandbits(1))
-        if should_launch:
-            if driver is None:
-                driver = self.driver
-                driver.get(random.choice(ghost_links))
-                time.sleep(random.randint(1, 10))
-
-    def write_soup_to_file(self, filename, soup=None):
-        if soup is None:
-            soup = self.getsoup()
-        with open(filename, 'w', encoding='utf-8') as f:
-            f.write(str(soup))
+    def scroll_down(self):
+    #Credits : https://stackoverflow.com/questions/48850974/selenium-scroll-to-end-of-page-indynamically-loading-webpage
+        self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    
 
 
 def launch_chrome_development():
@@ -220,6 +127,6 @@ def quit_chrome_new_profile(profilename):
 
 
 if __name__ == '__main__':
-    rs = RemoteSelenium(True)
+    rs = RemoteSelenium(False)
 
     
