@@ -15,35 +15,33 @@ import sys
 import shutil
 
 
-if sys.platform == 'win32':
-    chrome_driver = os.path.join(os.getcwd(), 'driver', 'chromedriver.exe')
-else:
-    chrome_driver = os.path.join(os.getcwd(), 'driver', 'chromedriver')
-chrome_profile = os.path.join(os.getcwd(), 'profile')
-if sys.platform == 'win32':
-    google_command_string = 'START chrome.exe --remote-debugging-port=9223 --user-data-dir={0}'.format(chrome_profile)
-else:
-    google_command_string = 'google-chrome --remote-debugging-port=9223 --user-data-dir={0} &>/dev/null &'.format(chrome_profile)
+
+
+
+
 
 
 
 class RemoteSelenium():
-    def __init__(self,delete_profile = False):
+    def __init__(self,delete_profile = False,port_number=9223):
+        self.port_number= port_number
+        self.chrome_profile = os.path.join(os.getcwd(), 'profile')
+        self.chrome_driver = os.path.join(os.getcwd(), 'driver', 'chromedriver.exe')
+        self.google_command_string = f'START chrome.exe --remote-debugging-port={self.port_number} --user-data-dir={self.chrome_profile}'
 
         if delete_profile:
-            quit_chrome_new_profile(chrome_profile)
+            quit_chrome_new_profile(self.chrome_profile,port_number=self.port_number,chrome_driver=self.chrome_driver)
         self.check_create_folders()
-        launch_chrome_development()
+        launch_chrome_development(self.google_command_string)
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_experimental_option(
-            "debuggerAddress", "127.0.0.1:9223")
+        chrome_options.add_experimental_option("debuggerAddress", f"127.0.0.1:{self.port_number}")
         try:
-            self.driver = webdriver.Chrome(chrome_driver, options=chrome_options)
+            self.driver = webdriver.Chrome(self.chrome_driver, options=chrome_options)
         except selenium.common.exceptions.WebDriverException as e:
             raise selenium.common.exceptions.WebDriverException("Please Download Chrome Driver And Place in driver folder ")
+        
         self.soup = BeautifulSoup(self.driver.page_source, "html.parser")
-
-
+        
     def check_create_folders(self):
         if os.path.exists(os.path.join(os.getcwd(), 'driver')):
             pass
@@ -68,7 +66,7 @@ class RemoteSelenium():
     
 
 
-def launch_chrome_development():
+def launch_chrome_development(google_command_string):
 
     all_process = list(psutil.process_iter())
     if sys.platform == 'win32':
@@ -76,12 +74,6 @@ def launch_chrome_development():
     else:
         run_status = 'chrome' in (p.name() for p in all_process)
     #print(run_status)
-
-    if sys.platform == 'win32':
-        pass
-    else:
-        os.chmod(chrome_driver, stat.S_IRWXU)
-
     if not run_status:
         os.system(google_command_string)
         print('Started  google-chrome run command')
@@ -90,7 +82,7 @@ def launch_chrome_development():
         print("Chrome Instance Already Running")
         return "Chrome Instance Already Running"
 
-def quit_chrome_new_profile(profilename):
+def quit_chrome_new_profile(profilename,port_number,chrome_driver):
 
     all_process = list(psutil.process_iter())
     if sys.platform == 'win32':
@@ -111,13 +103,13 @@ def quit_chrome_new_profile(profilename):
     
 
     chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_experimental_option("debuggerAddress", "127.0.0.1:9223")
+    chrome_options.add_experimental_option("debuggerAddress", f"127.0.0.1:{port_number}")
     try:
         driver = webdriver.Chrome(chrome_driver, options=chrome_options)
         driver.close()
         driver.quit()
     except selenium.common.exceptions.WebDriverException as e:
-        raise selenium.common.exceptions.WebDriverException("Please Download Chrome Driver And Place in driver folder ") 
+        raise e("Please Download Chrome Driver And Place in driver folder ") 
     
     time.sleep(3)
     if os.path.exists(os.path.join(os.getcwd(), profilename)):
@@ -127,6 +119,6 @@ def quit_chrome_new_profile(profilename):
 
 
 if __name__ == '__main__':
-    rs = RemoteSelenium(False)
+    rs = RemoteSelenium(delete_profile=True)
 
     
