@@ -13,10 +13,19 @@ import stat
 import psutil
 import sys
 import shutil
+import socket
+    
 
-
-
-
+def open_port():
+    all_ports = []
+    for i in range(5):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.bind(("",0))
+        s.listen(1)
+        port = s.getsockname()[1]
+        s.close()
+        all_ports.append(port)
+    return set(all_ports)
 
 
 
@@ -119,6 +128,7 @@ def quit_chrome_new_profile(profilename,port_number,chrome_driver):
 
 
 if __name__ == '__main__':
-    rs = RemoteSelenium(delete_profile=True)
+    rs = RemoteSelenium(delete_profile=False)
+    #print(open_port())
 
     
