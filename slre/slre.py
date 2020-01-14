@@ -14,9 +14,18 @@ import psutil
 import sys
 import shutil
 import socket
+import logging
+
+logging.basicConfig(filename='slre.log', level=logging.DEBUG,
+                    format='%(asctime)s:%(levelname)s:%(message)s:%(lineno)d')
+console = logging.StreamHandler()
+console.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s:%(lineno)d')
+console.setFormatter(formatter)
+logging.getLogger("").addHandler(console)
     
 
-def open_port():
+def open_ports():
     all_ports = []
     for i in range(5):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -28,39 +37,38 @@ def open_port():
     return set(all_ports)
 
 
-
-
-
 class RemoteSelenium():
     def __init__(self,delete_profile = False,port_number=9223):
         self.port_number= port_number
-        self.chrome_profile = os.path.join(os.getcwd(), 'profile')
+        self.chrome_profile = os.path.join(os.getcwd(), str(self.port_number))
         self.chrome_driver = os.path.join(os.getcwd(), 'driver', 'chromedriver.exe')
         self.google_command_string = f'START chrome.exe --remote-debugging-port={self.port_number} --user-data-dir={self.chrome_profile}'
 
         if delete_profile:
             quit_chrome_new_profile(self.chrome_profile,port_number=self.port_number,chrome_driver=self.chrome_driver)
-        self.check_create_folders()
+        self.check_create_folders(profile_name=str(self.port_number))
         launch_chrome_development(self.google_command_string)
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_experimental_option("debuggerAddress", f"127.0.0.1:{self.port_number}")
         try:
             self.driver = webdriver.Chrome(self.chrome_driver, options=chrome_options)
         except selenium.common.exceptions.WebDriverException as e:
-            raise selenium.common.exceptions.WebDriverException("Please Download Chrome Driver And Place in driver folder ")
+            launch_chrome_development(self.google_command_string,override=True)
+            #raise selenium.common.exceptions.WebDriverException("Please Download Chrome Driver And Place in driver folder ")
+            self.driver = webdriver.Chrome(self.chrome_driver, options=chrome_options)
         
         self.soup = BeautifulSoup(self.driver.page_source, "html.parser")
         
-    def check_create_folders(self):
+    def check_create_folders(self,profile_name):
         if os.path.exists(os.path.join(os.getcwd(), 'driver')):
             pass
         else:
             os.mkdir(os.path.join(os.getcwd(), 'driver'))
 
-        if os.path.exists(os.path.join(os.getcwd(), 'profile')):
+        if os.path.exists(os.path.join(os.getcwd(), profile_name)):
             pass
         else:
-            os.mkdir(os.path.join(os.getcwd(),'profile'))
+            os.mkdir(os.path.join(os.getcwd(),profile_name))
 
 
     def getsoup(self):
@@ -75,7 +83,7 @@ class RemoteSelenium():
     
 
 
-def launch_chrome_development(google_command_string):
+def launch_chrome_development(google_command_string,override=False):
 
     all_process = list(psutil.process_iter())
     if sys.platform == 'win32':
@@ -83,13 +91,17 @@ def launch_chrome_development(google_command_string):
     else:
         run_status = 'chrome' in (p.name() for p in all_process)
     #print(run_status)
-    if not run_status:
+    if not run_status and override == False:
+        os.system(google_command_string)
+        print('Started  google-chrome run command')
+        return "Started google-chrome run command"
+    elif override==True:
         os.system(google_command_string)
         print('Started  google-chrome run command')
         return "Started google-chrome run command"
     else:
-        print("Chrome Instance Already Running")
-        return "Chrome Instance Already Running"
+        logging.debug("Chrome Already Running on this port...")
+
 
 def quit_chrome_new_profile(profilename,port_number,chrome_driver):
 
@@ -118,7 +130,7 @@ def quit_chrome_new_profile(profilename,port_number,chrome_driver):
         driver.close()
         driver.quit()
     except selenium.common.exceptions.WebDriverException as e:
-        raise e("Please Download Chrome Driver And Place in driver folder ") 
+        raise (e + "Please Download Chrome Driver And Place in driver folder ") 
     
     time.sleep(3)
     if os.path.exists(os.path.join(os.getcwd(), profilename)):
@@ -128,7 +140,5 @@ def quit_chrome_new_profile(profilename,port_number,chrome_driver):
 
 
 if __name__ == '__main__':
-    rs = RemoteSelenium(delete_profile=False)
-    #print(open_port())
-
-    
+    rs = RemoteSelenium(delete_profile=False,port_number=56828)
+    print(open_ports())
