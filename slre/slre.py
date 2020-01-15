@@ -52,7 +52,7 @@ class RemoteSelenium():
         chrome_options.add_experimental_option("debuggerAddress", f"127.0.0.1:{self.port_number}")
         try:
             self.driver = webdriver.Chrome(self.chrome_driver, options=chrome_options)
-        except selenium.common.exceptions.WebDriverException as e:
+        except selenium.common.exceptions.WebDriverException:
             launch_chrome_development(self.google_command_string,override=True)
             #raise selenium.common.exceptions.WebDriverException("Please Download Chrome Driver And Place in driver folder ")
             self.driver = webdriver.Chrome(self.chrome_driver, options=chrome_options)
@@ -100,7 +100,7 @@ def launch_chrome_development(google_command_string,override=False):
         print('Started  google-chrome run command')
         return "Started google-chrome run command"
     else:
-        logging.debug("Chrome Already Running on this port...")
+        logging.debug("Chrome Already Running on ...")
 
 
 def quit_chrome_new_profile(profilename,port_number,chrome_driver):
@@ -141,4 +141,4 @@ def quit_chrome_new_profile(profilename,port_number,chrome_driver):
 
 if __name__ == '__main__':
     rs = RemoteSelenium(delete_profile=False,port_number=56828)
-    print(open_ports())
+    #print(open_ports())
