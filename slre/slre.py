@@ -141,4 +141,4 @@ def quit_chrome_new_profile(profilename,port_number,chrome_driver):
 
 if __name__ == '__main__':
     rs = RemoteSelenium(delete_profile=False,port_number=56828)
-    #print(open_ports())
+    print(open_ports())
