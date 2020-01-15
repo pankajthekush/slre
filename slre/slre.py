@@ -77,15 +77,26 @@ class RemoteSelenium():
         self.soup = soup
         return soup
 
-    def scroll_down(self):
+    
+    def scroll_bottom(self):
     #Credits : https://stackoverflow.com/questions/48850974/selenium-scroll-to-end-of-page-indynamically-loading-webpage
         self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    
+
+
     def scroll_top(self):
         self.driver.execute_script("window.scrollTo(0, 0);")
 
     def scroll_up(self,points=500):
          self.driver.execute_script(f"window.scrollTo(0, {points});")
+
+    def scroll_down(self,points=500):
+        total_height = self.driver.execute_script(" return document.body.scrollHeight;")
+        counter = 100
+        while counter < total_height:
+            self.driver.execute_script(f"window.scrollTo(0, {counter});")
+            counter += 500
+            total_height = self.driver.execute_script(" return document.body.scrollHeight;")
+            time.sleep(1)
 
 
 def launch_chrome_development(google_command_string,override=False):
@@ -147,4 +158,4 @@ def quit_chrome_new_profile(profilename,port_number,chrome_driver):
 if __name__ == '__main__':
     rs = RemoteSelenium(delete_profile=False,port_number=54421)
     input("Scr")
-    rs.scroll_up(500)
+    rs.scroll_down()
