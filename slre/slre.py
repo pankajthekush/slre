@@ -157,9 +157,21 @@ def quit_chrome_new_profile(profilename,port_number,chrome_driver):
 
 def list_availble_profiles():
     current_path = os.path.dirname(os.path.abspath(__file__))
+    dict_profiles = dict()
+    c_profiles = os.listdir(current_path)
+    r_profiles = [profile for profile in c_profiles if profile.isdigit()]
+
+    for profile in r_profiles:
+        lock_file = os.path.join(current_path,profile,'lockfile')
+        curr_loc_file_state = 'INUSE' if os.path.exists(lock_file) else 'AVAILABLE'
+        dict_profiles[profile] = curr_loc_file_state
+
+    return dict_profiles
+    
+
 
 
 if __name__ == '__main__':
-    rs = RemoteSelenium(delete_profile=False,port_number=54422)
-    input("Scr")
+    rs = RemoteSelenium(delete_profile=False,port_number=54420)
     rs.scroll_to(500)
+    input(list_availble_profiles())
