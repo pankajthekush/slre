@@ -43,7 +43,7 @@ class RemoteSelenium():
     def __init__(self,delete_profile = False,port_number=9223):
         self.port_number= port_number
         self.chrome_profile = os.path.join(current_path, str(self.port_number))
-        self.chrome_driver = os.path.join(current_path, 'driver', 'chromedriver.exe')
+        self.chrome_driver = os.path.join(current_path,str(port_number), 'driver', 'chromedriver.exe')
         self.google_command_string = f'START chrome.exe --remote-debugging-port={self.port_number} --user-data-dir={self.chrome_profile}'
 
         if delete_profile:
@@ -62,10 +62,10 @@ class RemoteSelenium():
         self.soup = BeautifulSoup(self.driver.page_source, "html.parser")
         
     def check_create_folders(self,profile_name):
-        if os.path.exists(os.path.join(current_path, 'driver')):
+        if os.path.exists(os.path.join(current_path,str(self.port_number), 'driver')):
             pass
         else:
-            os.mkdir(os.path.join(current_path, 'driver'))
+            os.mkdir(os.path.join(current_path,str(self.port_number), 'driver'))
 
         if os.path.exists(os.path.join(current_path, profile_name)):
             pass
@@ -172,6 +172,6 @@ def list_availble_profiles():
 
 
 if __name__ == '__main__':
-    rs = RemoteSelenium(delete_profile=False,port_number=54420)
+    rs = RemoteSelenium(delete_profile=False,port_number=54421)
     rs.scroll_to(500)
-    input(list_availble_profiles())
+    print(list_availble_profiles())
