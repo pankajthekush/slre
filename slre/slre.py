@@ -62,15 +62,15 @@ class RemoteSelenium():
         self.soup = BeautifulSoup(self.driver.page_source, "html.parser")
         
     def check_create_folders(self,profile_name):
-        if os.path.exists(os.path.join(current_path,str(self.port_number), 'driver')):
+        if os.path.exists(os.path.join(current_path,str(self.port_number))):
             pass
         else:
-            os.mkdir(os.path.join(current_path,str(self.port_number), 'driver'))
+            os.mkdir(os.path.join(current_path,str(self.port_number)))
 
-        if os.path.exists(os.path.join(current_path, profile_name)):
+        if os.path.exists(os.path.join(current_path, profile_name,'driver')):
             pass
         else:
-            os.mkdir(os.path.join(current_path,profile_name))
+            os.mkdir(os.path.join(current_path,profile_name,'driver'))
 
 
     def getsoup(self):
@@ -172,6 +172,6 @@ def list_availble_profiles():
 
 
 if __name__ == '__main__':
-    rs = RemoteSelenium(delete_profile=False,port_number=54421)
+    rs = RemoteSelenium(delete_profile=False,port_number=54423)
     rs.scroll_to(500)
     print(list_availble_profiles())
