@@ -17,7 +17,6 @@ import socket
 import logging
 
 current_path = os.path.dirname(os.path.abspath(__file__))
-
 logging.basicConfig(filename='slre.log', level=logging.DEBUG,
                     format='%(asctime)s:%(levelname)s:%(message)s:%(lineno)d')
 console = logging.StreamHandler()
