@@ -2,14 +2,14 @@ from selenium import webdriver
 import selenium.common.exceptions
 from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
-from .shelp import copy_file_to
+
 from urllib.parse import urljoin
 import random
 import time
 import subprocess
 import requests
 import zipfile
-import os
+import os,inspect
 import stat
 import psutil
 import sys
@@ -17,6 +17,11 @@ import shutil
 import socket
 import logging
 
+cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
+if cmd_folder not in sys.path:
+    sys.path.insert(0, cmd_folder)
+
+from shelp import copy_file_to
 
 current_path = os.path.dirname(os.path.abspath(__file__))
 logging.basicConfig(filename='slre.log', level=logging.DEBUG,
@@ -72,7 +77,7 @@ class RemoteSelenium():
             copy_file_to(os.path.join(current_path, profile_name,'driver','chromedriver.exe'))
         else:
             os.mkdir(os.path.join(current_path,profile_name,'driver'))
-            copy_file_to(os.path.join(current_path, profile_name,'driver','chromedriver.exe'))
+            copy_file_to(os.path.join(current_path, profile_name,'driver','chromedriver.exe'),title_text="Choose Chromedriver.exe")
 
 
     def getsoup(self):
