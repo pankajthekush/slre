@@ -2,7 +2,7 @@ from selenium import webdriver
 import selenium.common.exceptions
 from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
-from shelp import copy_file_to
+from .shelp import copy_file_to
 from urllib.parse import urljoin
 import random
 import time
