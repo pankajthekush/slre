@@ -2,7 +2,9 @@ from selenium import webdriver
 import selenium.common.exceptions
 from selenium.webdriver.common.keys import Keys
 from bs4 import BeautifulSoup
-
+from selenium.webdriver.support.ui  import WebDriverWait
+from selenium.webdriver.common.keys import Keys
+from time import sleep
 from urllib.parse import urljoin
 import random
 import time
@@ -105,6 +107,16 @@ class RemoteSelenium():
             total_height = self.driver.execute_script(" return document.body.scrollHeight;")
             time.sleep(1)
 
+    def clean_profile(self):
+        self.driver.get('https://example.com/')
+        self.driver.delete_all_cookies()
+        self.driver.get('chrome://settings/clearBrowserData')
+        sleep(3)
+        try:
+            self.driver.find_element_by_xpath('//settings-ui').send_keys(Keys.ENTER)
+        except Exception:
+            logging.debug("Failed to clear history")
+    
 
 def launch_chrome_development(google_command_string,override=False):
 
@@ -174,9 +186,10 @@ def list_availble_profiles():
         dict_profiles[profile] = curr_loc_file_state
 
     return dict_profiles
-    
+
+
 
 if __name__ == '__main__':
     rs = RemoteSelenium(delete_profile=False,port_number=54421)
     rs.scroll_to(500)
-    print(list_availble_profiles())
+    rs.clean_profile()

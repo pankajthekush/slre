@@ -109,3 +109,4 @@ venv.bak/
 /profile
 .idea
 slre/driver/chromedriver.exe
+.vscode
