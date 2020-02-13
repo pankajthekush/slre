@@ -60,6 +60,7 @@ class RemoteSelenium():
         launch_chrome_development(self.google_command_string)
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_experimental_option("debuggerAddress", f"127.0.0.1:{self.port_number}")
+        
         try:
             self.driver = webdriver.Chrome(self.chrome_driver, options=chrome_options)
         except selenium.common.exceptions.WebDriverException:
@@ -174,6 +175,7 @@ def quit_chrome_new_profile(profilename,port_number,chrome_driver):
 
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_experimental_option("debuggerAddress", f"127.0.0.1:{port_number}")
+    
     try:
         driver = webdriver.Chrome(chrome_driver, options=chrome_options)
         driver.close()
@@ -204,5 +206,5 @@ def list_availble_profiles():
 
 
 if __name__ == '__main__':
-    rs = RemoteSelenium(delete_profile=False,port_number=54420)
+    rs = RemoteSelenium(delete_profile=False,port_number=54421)
     rs.clean_profile()

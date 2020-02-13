@@ -107,6 +107,8 @@ venv.bak/
 /driver
 /resources
 /profile
+/slre/54421
+/slre/54420
 .idea
 slre/driver/chromedriver.exe
 .vscode
