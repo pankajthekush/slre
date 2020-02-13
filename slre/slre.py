@@ -48,7 +48,7 @@ def open_ports():
 
 
 class RemoteSelenium():
-    def __init__(self,delete_profile = False,port_number=9223):
+    def __init__(self,delete_profile = False,port_number=9223,headless=False):
         self.port_number= port_number
         self.chrome_profile = os.path.join(current_path, str(self.port_number))
         self.chrome_driver = os.path.join(current_path,str(port_number), 'driver', 'chromedriver.exe')
@@ -107,15 +107,27 @@ class RemoteSelenium():
             total_height = self.driver.execute_script(" return document.body.scrollHeight;")
             time.sleep(1)
 
+
     def clean_profile(self):
         self.driver.get('https://example.com/')
         self.driver.delete_all_cookies()
         self.driver.get('chrome://settings/clearBrowserData')
         sleep(3)
+        
         try:
             self.driver.find_element_by_xpath('//settings-ui').send_keys(Keys.ENTER)
         except Exception:
             logging.debug("Failed to clear history")
+        
+        #close tab to clean local data
+        
+        curr_tab = self.driver.window_handles[0]
+        self.driver.execute_script('window.open("https://www.google.com")')
+        logging.debug("Opening new tab")
+        self.driver.switch_to.window(window_name=curr_tab)
+        input("Closing tab")
+        self.driver.close()
+        #Open a new window
     
 
 def launch_chrome_development(google_command_string,override=False):
@@ -190,6 +202,5 @@ def list_availble_profiles():
 
 
 if __name__ == '__main__':
-    rs = RemoteSelenium(delete_profile=False,port_number=54421)
-    rs.scroll_to(500)
+    rs = RemoteSelenium(delete_profile=False,port_number=54420)
     rs.clean_profile()
