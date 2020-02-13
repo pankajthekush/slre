@@ -125,8 +125,10 @@ class RemoteSelenium():
         self.driver.execute_script('window.open("https://www.google.com")')
         logging.debug("Opening new tab")
         self.driver.switch_to.window(window_name=curr_tab)
-        input("Closing tab")
         self.driver.close()
+        curr_tab = self.driver.window_handles[0]
+        self.driver.switch_to.window(window_name=curr_tab)
+
         #Open a new window
     
 
