@@ -52,7 +52,12 @@ class RemoteSelenium():
         self.port_number= port_number
         self.chrome_profile = os.path.join(current_path, str(self.port_number))
         self.chrome_driver = os.path.join(current_path,str(port_number), 'driver', 'chromedriver.exe')
-        self.google_command_string = f'START chrome.exe --remote-debugging-port={self.port_number} --user-data-dir={self.chrome_profile}'
+
+        if headless == False:
+            self.google_command_string = f'START chrome.exe --remote-debugging-port={self.port_number} --user-data-dir={self.chrome_profile}'
+        else:
+            self.google_command_string = f'START chrome.exe --headless --disable-gpu --remote-debugging-port={self.port_number} --user-data-dir={self.chrome_profile}'
+
 
         if delete_profile:
             quit_chrome_new_profile(self.chrome_profile,port_number=self.port_number,chrome_driver=self.chrome_driver)
@@ -206,5 +211,13 @@ def list_availble_profiles():
 
 
 if __name__ == '__main__':
-    rs = RemoteSelenium(delete_profile=False,port_number=54421)
-    rs.clean_profile()
+    rs = RemoteSelenium(delete_profile=False,port_number=54421,headless=False)
+    input('here')
+    rs.driver.get('https://www.example.com')
+    rs.driver.get('https://www.yahoo.com')
+    rs.driver.get('https://www.msn.com')
+    rs.driver.get('https://www.nokia.com')
+    ts = (rs.driver.page_source)
+    #rs.clean_profile()
+   # rs.driver.quit()
+   
