@@ -206,7 +206,6 @@ def list_availble_profiles():
 
 if __name__ == '__main__':
     rs = RemoteSelenium(delete_profile=False,port_number=54421,headless=False)
-    input('here')
     rs.driver.get('https://www.example.com')
     rs.driver.get('https://www.yahoo.com')
     rs.driver.get('https://www.msn.com')
