@@ -17,7 +17,7 @@ import psutil
 import sys
 import shutil
 import socket
-import logging
+#import logging
 
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
 if cmd_folder not in sys.path:
@@ -26,13 +26,8 @@ if cmd_folder not in sys.path:
 from shelp import copy_file_to
 
 current_path = os.path.dirname(os.path.abspath(__file__))
-logging.basicConfig(filename='slre.log', level=logging.DEBUG,
-                    format='%(asctime)s:%(levelname)s:%(message)s:%(lineno)d')
-console = logging.StreamHandler()
-console.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s:%(levelname)s:%(message)s:%(lineno)d')
-console.setFormatter(formatter)
-logging.getLogger("").addHandler(console)
+
+
     
 
 def open_ports():
@@ -123,13 +118,13 @@ def clean_profile(remoteselenium = None):
     try:
         remoteselenium.driver.find_element_by_xpath('//settings-ui').send_keys(Keys.ENTER)
     except Exception:
-        logging.debug("Failed to clear history")
+        print("Failed to Clear history")
     
     #close tab to clean local data
     
     curr_tab = remoteselenium.driver.window_handles[0]
     remoteselenium.driver.execute_script('window.open("https://www.google.com")')
-    logging.debug("Opening new tab")
+    #logging.debug("Opening new tab")
     remoteselenium.driver.switch_to.window(window_name=curr_tab)
     remoteselenium.driver.close()
     curr_tab = remoteselenium.driver.window_handles[0]
@@ -155,7 +150,7 @@ def launch_chrome_development(google_command_string,override=False):
         print('Started  google-chrome run command')
         return "Started google-chrome run command"
     else:
-        logging.debug("Chrome Already Running on ...")
+       print("Chrome Already Running on ...")
 
 
 def quit_chrome_new_profile(profilename,port_number,chrome_driver):
