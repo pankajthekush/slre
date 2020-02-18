@@ -114,29 +114,29 @@ class RemoteSelenium():
             time.sleep(1)
 
 
-    def clean_profile(self):
-        self.driver.get('https://example.com/')
-        self.driver.delete_all_cookies()
-        self.driver.get('chrome://settings/clearBrowserData')
-        sleep(3)
-        
-        try:
-            self.driver.find_element_by_xpath('//settings-ui').send_keys(Keys.ENTER)
-        except Exception:
-            logging.debug("Failed to clear history")
-        
-        #close tab to clean local data
-        
-        curr_tab = self.driver.window_handles[0]
-        self.driver.execute_script('window.open("https://www.google.com")')
-        logging.debug("Opening new tab")
-        self.driver.switch_to.window(window_name=curr_tab)
-        self.driver.close()
-        curr_tab = self.driver.window_handles[0]
-        self.driver.switch_to.window(window_name=curr_tab)
-
-        #Open a new window
+def clean_profile(remoteselenium = None):
+    remoteselenium.driver.get('https://example.com/')
+    remoteselenium.driver.delete_all_cookies()
+    remoteselenium.driver.get('chrome://settings/clearBrowserData')
+    sleep(3)
     
+    try:
+        remoteselenium.driver.find_element_by_xpath('//settings-ui').send_keys(Keys.ENTER)
+    except Exception:
+        logging.debug("Failed to clear history")
+    
+    #close tab to clean local data
+    
+    curr_tab = remoteselenium.driver.window_handles[0]
+    remoteselenium.driver.execute_script('window.open("https://www.google.com")')
+    logging.debug("Opening new tab")
+    remoteselenium.driver.switch_to.window(window_name=curr_tab)
+    remoteselenium.driver.close()
+    curr_tab = remoteselenium.driver.window_handles[0]
+    remoteselenium.driver.switch_to.window(window_name=curr_tab)
+
+    #Open a new window
+
 
 def launch_chrome_development(google_command_string,override=False):
 
@@ -207,7 +207,6 @@ def list_availble_profiles():
         dict_profiles[profile] = curr_loc_file_state
 
     return dict_profiles
-
 
 
 if __name__ == '__main__':
