@@ -137,9 +137,12 @@ def launch_chrome_development(google_command_string,override=False):
 
     all_process = list(psutil.process_iter())
     if sys.platform == 'win32':
-        run_status = 'chrome.exe' in (p.name() for p in all_process)
-    else:
-        run_status = 'chrome' in (p.name() for p in all_process)
+        try:
+            #Bug sometime when it gives error
+            run_status = 'chrome.exe' in (p.name() for p in all_process)
+        except Exception:
+            run_status = False
+
     #print(run_status)
     if not run_status and override == False:
         os.system(google_command_string)
@@ -150,7 +153,7 @@ def launch_chrome_development(google_command_string,override=False):
         print('Started  google-chrome run command')
         return "Started google-chrome run command"
     else:
-       print("Chrome Already Running on ...")
+       print("Chrome Already Running...")
 
 
 def quit_chrome_new_profile(profilename,port_number,chrome_driver):
@@ -206,11 +209,11 @@ def list_availble_profiles():
 
 if __name__ == '__main__':
     rs = RemoteSelenium(delete_profile=False,port_number=54421,headless=False)
-    rs.driver.get('https://www.example.com')
-    rs.driver.get('https://www.yahoo.com')
-    rs.driver.get('https://www.msn.com')
     rs.driver.get('https://www.nokia.com')
-    ts = (rs.driver.page_source)
-    #rs.clean_profile()
-   # rs.driver.quit()
-   
+    
+    rs.driver.get('chrome://history/')
+    input(rs.driver.page_source)
+    
+    rs.driver.close()
+    rs.driver.quit()
+    
