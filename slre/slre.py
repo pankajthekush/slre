@@ -208,12 +208,6 @@ def list_availble_profiles():
 
 
 if __name__ == '__main__':
-    rs = RemoteSelenium(delete_profile=False,port_number=54421,headless=False)
+    rs = RemoteSelenium(port_number=54421)
     rs.driver.get('https://www.nokia.com')
-    
-    rs.driver.get('chrome://history/')
-    input(rs.driver.page_source)
-    
-    rs.driver.close()
-    rs.driver.quit()
-    
+     
