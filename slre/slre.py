@@ -1,7 +1,6 @@
 from selenium import webdriver
 import selenium.common.exceptions
 from selenium.webdriver.common.keys import Keys
-from bs4 import BeautifulSoup
 from selenium.webdriver.support.ui  import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from time import sleep
@@ -57,18 +56,17 @@ class RemoteSelenium():
         if delete_profile:
             quit_chrome_new_profile(self.chrome_profile,port_number=self.port_number,chrome_driver=self.chrome_driver)
         self.check_create_folders(profile_name=str(self.port_number))
-        launch_chrome_development(self.google_command_string)
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_experimental_option("debuggerAddress", f"127.0.0.1:{self.port_number}")
         
         try:
+            print("Launching Chrome,This will take some time...")
             self.driver = webdriver.Chrome(self.chrome_driver, options=chrome_options)
         except selenium.common.exceptions.WebDriverException:
+            print("Launching Chrome")
             launch_chrome_development(self.google_command_string,override=True)
-            #raise selenium.common.exceptions.WebDriverException("Please Download Chrome Driver And Place in driver folder ")
             self.driver = webdriver.Chrome(self.chrome_driver, options=chrome_options)
         
-        self.soup = BeautifulSoup(self.driver.page_source, "html.parser")
         
     def check_create_folders(self,profile_name):
         if os.path.exists(os.path.join(current_path,str(self.port_number))):
@@ -82,12 +80,6 @@ class RemoteSelenium():
             os.mkdir(os.path.join(current_path,profile_name,'driver'))
             copy_file_to(os.path.join(current_path, profile_name,'driver','chromedriver.exe'),title_text="Choose Chromedriver.exe")
 
-
-    def getsoup(self):
-        sdriver = self.driver
-        soup = BeautifulSoup(sdriver.page_source, 'html.parser')
-        self.soup = soup
-        return soup
 
     #Credits : https://stackoverflow.com/questions/48850974/selenium-scroll-to-end-of-page-indynamically-loading-webpage
     def scroll_bottom(self):
@@ -135,16 +127,7 @@ def clean_profile(remoteselenium = None):
 
 def launch_chrome_development(google_command_string,override=False):
 
-    all_process = list(psutil.process_iter())
-    if sys.platform == 'win32':
-        try:
-            #Bug sometime when it gives error
-            run_status = 'chrome.exe' in (p.name() for p in all_process)
-        except Exception:
-            run_status = False
-
-    #print(run_status)
-    if not run_status and override == False:
+    if  override == False:
         os.system(google_command_string)
         print('Started  google-chrome run command')
         return "Started google-chrome run command"
@@ -152,9 +135,7 @@ def launch_chrome_development(google_command_string,override=False):
         os.system(google_command_string)
         print('Started  google-chrome run command')
         return "Started google-chrome run command"
-    else:
-       print("Chrome Already Running...")
-
+    
 
 def quit_chrome_new_profile(profilename,port_number,chrome_driver):
 
