@@ -42,7 +42,7 @@ def open_ports():
 
 
 class RemoteSelenium():
-    def __init__(self,delete_profile = False,port_number=9223,headless=False):
+    def __init__(self,delete_profile = False,port_number=92223,headless=False):
         self.port_number= port_number
         self.chrome_profile = os.path.join(current_path, str(self.port_number))
         self.chrome_driver = os.path.join(current_path,str(port_number), 'driver', 'chromedriver.exe')
