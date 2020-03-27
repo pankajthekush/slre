@@ -42,7 +42,7 @@ def open_ports():
 
 
 class RemoteSelenium():
-    def __init__(self,delete_profile = False,port_number=92223,headless=False):
+    def __init__(self,delete_profile = False,port_number=54420,headless=False):
         self.port_number= port_number
         self.chrome_profile = os.path.join(current_path, str(self.port_number))
         self.chrome_driver = os.path.join(current_path,str(port_number), 'driver', 'chromedriver.exe')
@@ -189,6 +189,5 @@ def list_availble_profiles():
 
 
 if __name__ == '__main__':
-    rs = RemoteSelenium(port_number=54421)
-    rs.driver.get('https://www.nokia.com')
-     
+    rs = RemoteSelenium()
+    rs.driver.get('https://www.google.com')
