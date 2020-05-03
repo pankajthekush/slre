@@ -12,7 +12,6 @@ import requests
 import zipfile
 import os,inspect
 import stat
-import psutil
 import sys
 import shutil
 import socket
@@ -45,22 +44,35 @@ class RemoteSelenium():
     def __init__(self,delete_profile = False,port_number=54420,headless=False):
         self.port_number= port_number
         self.chrome_profile = os.path.join(current_path, str(self.port_number))
-        self.chrome_driver = os.path.join(current_path,str(port_number), 'driver', 'chromedriver.exe')
 
-        if headless == False:
-            self.google_command_string = f'START chrome.exe --remote-debugging-port={self.port_number} --user-data-dir={self.chrome_profile}'
+
+        if sys.platform == 'linux':
+            #for linux
+            self.chrome_driver = os.path.join(current_path,str(port_number), 'driver', 'chromedriver')
+            #google start commands
+            if headless == False:
+                self.google_command_string = f'google-chrome --remote-debugging-port={self.port_number} --user-data-dir={self.chrome_profile}&'
+            else:
+                self.google_command_string = f'google-chrome --headless --remote-debugging-port={self.port_number} --user-data-dir={self.chrome_profile}&'
         else:
-            self.google_command_string = f'START chrome.exe --headless --disable-gpu --remote-debugging-port={self.port_number} --user-data-dir={self.chrome_profile}'
+            #for windoes
+            self.chrome_driver = os.path.join(current_path,str(port_number), 'driver', 'chromedriver.exe')
+            
+            if headless == False:
+                self.google_command_string = f'START chrome.exe --remote-debugging-port={self.port_number} --user-data-dir={self.chrome_profile}'
+            else:
+                self.google_command_string = f'START chrome.exe --headless --disable-gpu --remote-debugging-port={self.port_number} --user-data-dir={self.chrome_profile}'
 
 
         if delete_profile:
             quit_chrome_new_profile(self.chrome_profile,port_number=self.port_number,chrome_driver=self.chrome_driver)
+        
         self.check_create_folders(profile_name=str(self.port_number))
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_experimental_option("debuggerAddress", f"127.0.0.1:{self.port_number}")
         
         try:
-            print("Launching Chrome,This will take some time...")
+            print("Assuming chrome already running, wait...")
             self.driver = webdriver.Chrome(self.chrome_driver, options=chrome_options)
         except selenium.common.exceptions.WebDriverException:
             print("Launching Chrome")
@@ -73,12 +85,20 @@ class RemoteSelenium():
             pass
         else:
             os.mkdir(os.path.join(current_path,str(self.port_number)))
-
-        if os.path.exists(os.path.join(current_path, profile_name,'driver')):
-            copy_file_to(os.path.join(current_path, profile_name,'driver','chromedriver.exe'))
+        if sys.platform == 'linux':
+            #copy chromedriver for linux
+            if os.path.exists(os.path.join(current_path, profile_name,'driver')):
+                copy_file_to(os.path.join(current_path, profile_name,'driver','chromedriver'))
+            else:
+                os.mkdir(os.path.join(current_path,profile_name,'driver'))
+                copy_file_to(os.path.join(current_path, profile_name,'driver','chromedriver'),title_text="Choose Chromedriver.exe")
         else:
-            os.mkdir(os.path.join(current_path,profile_name,'driver'))
-            copy_file_to(os.path.join(current_path, profile_name,'driver','chromedriver.exe'),title_text="Choose Chromedriver.exe")
+            #for windows
+            if os.path.exists(os.path.join(current_path, profile_name,'driver')):
+                copy_file_to(os.path.join(current_path, profile_name,'driver','chromedriver.exe'))
+            else:
+                os.mkdir(os.path.join(current_path,profile_name,'driver'))
+                copy_file_to(os.path.join(current_path, profile_name,'driver','chromedriver.exe'),title_text="Choose Chromedriver.exe")
 
 
     #Credits : https://stackoverflow.com/questions/48850974/selenium-scroll-to-end-of-page-indynamically-loading-webpage
@@ -191,3 +211,4 @@ def list_availble_profiles():
 if __name__ == '__main__':
     rs = RemoteSelenium()
     rs.driver.get('https://www.google.com')
+    rs.driver.get('https://www.quora.com')

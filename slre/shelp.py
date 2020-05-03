@@ -6,7 +6,7 @@ import os
 def browse_file_path(title_text="Choose File"):
     root = tk.Tk()
     root.withdraw()
-    file_path = filedialog.askopenfilename(filetypes =(("Exe Files", "*.exe"),("All Files","*.*")),
+    file_path = filedialog.askopenfilename(filetypes =(("Exe Files", "*.exe"),("All Files","*")),
                            title = title_text)
     return file_path
 
