@@ -90,6 +90,9 @@ class RemoteSelenium():
 
             if os.path.exists(os.path.join(current_path, profile_name,'driver')):
                 copy_file_to_no_tk(os.path.join(current_path, profile_name,'driver','chromedriver'))
+            else:
+                os.mkdir(os.path.join(current_path,profile_name,'driver'))
+                copy_file_to_no_tk(os.path.join(current_path, profile_name,'driver','chromedriver'))
 
 
         else:
