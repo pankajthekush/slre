@@ -51,9 +51,9 @@ class RemoteSelenium():
             self.chrome_driver = os.path.join(current_path,str(port_number), 'driver', 'chromedriver')
             #google start commands
             if headless == False:
-                self.google_command_string = f'google-chrome --remote-debugging-port={self.port_number} --user-data-dir={self.chrome_profile}&'
+                self.google_command_string = f'google-chrome --remote-debugging-port={self.port_number} --no-sandbox --allow-running-insecure-content --user-data-dir={self.chrome_profile}&'
             else:
-                self.google_command_string = f'google-chrome --headless --remote-debugging-port={self.port_number} --user-data-dir={self.chrome_profile}&'
+                self.google_command_string = f'google-chrome --headless --remote-debugging-port={self.port_number} --no-sandbox --allow-running-insecure-content --user-data-dir={self.chrome_profile}&'
         else:
             #for windoes
             self.chrome_driver = os.path.join(current_path,str(port_number), 'driver', 'chromedriver.exe')
