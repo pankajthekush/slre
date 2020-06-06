@@ -21,7 +21,7 @@ cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( ins
 if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
 
-from shelp import copy_file_to,copy_file_to_no_tk
+from shelp import copy_file_to_no_tk
 
 current_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -98,10 +98,10 @@ class RemoteSelenium():
         else:
             #for windows
             if os.path.exists(os.path.join(current_path, profile_name,'driver')):
-                copy_file_to(os.path.join(current_path, profile_name,'driver','chromedriver.exe'))
+                copy_file_to_no_tk(os.path.join(current_path, profile_name,'driver','chromedriver.exe'))
             else:
                 os.mkdir(os.path.join(current_path,profile_name,'driver'))
-                copy_file_to(os.path.join(current_path, profile_name,'driver','chromedriver.exe'),title_text="Choose Chromedriver.exe")
+                copy_file_to_no_tk(os.path.join(current_path, profile_name,'driver','chromedriver.exe'),title_text="Choose Chromedriver.exe")
 
 
     #Credits : https://stackoverflow.com/questions/48850974/selenium-scroll-to-end-of-page-indynamically-loading-webpage
