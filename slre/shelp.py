@@ -1,6 +1,6 @@
 
 # import tkinter as tk
-from tkinter import filedialog
+# from tkinter import filedialog
 import os,sys,stat
 from pathlib import Path
 
