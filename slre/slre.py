@@ -15,13 +15,14 @@ import stat
 import sys
 import shutil
 import socket
+from shelp2 import copy_file_to_no_tk
 #import logging
 
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
 if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
 
-from shelp import copy_file_to_no_tk
+
 
 current_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -213,7 +214,7 @@ def list_availble_profiles():
 
 if __name__ == '__main__':
     rs = RemoteSelenium()
-    rs.driver.execute_cdp_cmd('Network.setUserAgentOverride', {"userAgent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) QtWebEngine/5.14.0 Chrome/77.0.3865.129 Safari/537.36", "platform":"Windows"})
+    # rs.driver.execute_cdp_cmd('Network.setUserAgentOverride', {"userAgent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) QtWebEngine/5.14.0 Chrome/77.0.3865.129 Safari/537.36", "platform":"Windows"})
     input('do tst')
     rs.driver.get('https://www.google.com')
     rs.driver.get('https://www.quora.com')
