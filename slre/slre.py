@@ -42,10 +42,11 @@ def open_ports():
 
 
 class RemoteSelenium():
-    def __init__(self,delete_profile = False,port_number=54420,headless=False):
+    def __init__(self,port_number=54420,headless=False,proxy_host=None,proxy_port=None):
         self.port_number= port_number
         self.chrome_profile = os.path.join(current_path, str(self.port_number))
-
+        self.proxy_host = proxy_host
+        self.proxy_port = proxy_port
 
         if sys.platform == 'linux':
             #for linux
@@ -64,14 +65,18 @@ class RemoteSelenium():
             else:
                 self.google_command_string = f'START chrome.exe --headless --disable-gpu --remote-debugging-port={self.port_number} --user-data-dir={self.chrome_profile}'
 
-
-        if delete_profile:
-            quit_chrome_new_profile(self.chrome_profile,port_number=self.port_number,chrome_driver=self.chrome_driver)
         
         self.check_create_folders(profile_name=str(self.port_number))
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_experimental_option("debuggerAddress", f"127.0.0.1:{self.port_number}")
+        chrome_options.add_argument("--ignore-certificate-errors")
+
+        if self.proxy_host is not None:
+            chrome_options.add_argument('--proxy-server={host}:{port}'.format(host=self.proxy_host, port=self.proxy_port))
         
+
+
+
         try:
             print("Assuming chrome already running, wait...")
             self.driver = webdriver.Chrome(self.chrome_driver, options=chrome_options)
@@ -161,42 +166,6 @@ def launch_chrome_development(google_command_string,override=False):
         return "Started google-chrome run command"
     
 
-def quit_chrome_new_profile(profilename,port_number,chrome_driver):
-
-    all_process = list(psutil.process_iter())
-    if sys.platform == 'win32':
-        run_status = 'chrome.exe' in (p.name() for p in all_process)
-    else:
-        run_status = 'chrome' in (p.name() for p in all_process)
-    #print(run_status)
-
-    #If chrome is not running then do nothing
-    if run_status:
-        pass
-    else:
-        if os.path.exists(os.path.join(current_path, profilename)):
-            shutil.rmtree(os.path.join(current_path, profilename))
-        else:
-            pass
-        return
-    
-
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_experimental_option("debuggerAddress", f"127.0.0.1:{port_number}")
-    
-    try:
-        driver = webdriver.Chrome(chrome_driver, options=chrome_options)
-        driver.close()
-        driver.quit()
-    except selenium.common.exceptions.WebDriverException as e:
-        raise (e + "Please Download Chrome Driver And Place in driver folder ") 
-    
-    time.sleep(3)
-    if os.path.exists(os.path.join(current_path, profilename)):
-        shutil.rmtree(os.path.join(current_path, profilename))
-    else:
-        pass
-
 
 def list_availble_profiles():
     current_path = os.path.dirname(os.path.abspath(__file__))
@@ -213,7 +182,7 @@ def list_availble_profiles():
 
 
 if __name__ == '__main__':
-    rs = RemoteSelenium()
+    rs = RemoteSelenium(proxy_host='0.0.0.0',proxy_port='8080')
     # rs.driver.execute_cdp_cmd('Network.setUserAgentOverride', {"userAgent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) QtWebEngine/5.14.0 Chrome/77.0.3865.129 Safari/537.36", "platform":"Windows"})
     input('do tst')
     rs.driver.get('https://www.google.com')
