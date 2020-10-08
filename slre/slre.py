@@ -73,17 +73,10 @@ class RemoteSelenium():
 
         if self.proxy_host is not None:
             chrome_options.add_argument('--proxy-server={host}:{port}'.format(host=self.proxy_host, port=self.proxy_port))
-        
 
-
-
-        try:
-            print("Assuming chrome already running, wait...")
-            self.driver = webdriver.Chrome(self.chrome_driver, options=chrome_options)
-        except selenium.common.exceptions.WebDriverException:
-            print("Launching Chrome")
-            launch_chrome_development(self.google_command_string,override=True)
-            self.driver = webdriver.Chrome(self.chrome_driver, options=chrome_options)
+        print("Launching Chrome")
+        launch_chrome_development(self.google_command_string,override=True)
+        self.driver = webdriver.Chrome(self.chrome_driver, options=chrome_options)
         
         
     def check_create_folders(self,profile_name):
@@ -109,6 +102,38 @@ class RemoteSelenium():
                 os.mkdir(os.path.join(current_path,profile_name,'driver'))
                 copy_file_to_no_tk(os.path.join(current_path, profile_name,'driver','chromedriver.exe'),title_text="Choose Chromedriver.exe")
 
+    def clean_profile(self):
+        self.driver.get('https://example.com/')
+        self.driver.delete_all_cookies()
+        self.driver.get('chrome://settings/clearBrowserData')
+        
+        sleep(3)
+        
+        try:
+            self.driver.find_element_by_xpath('//settings-ui').send_keys(Keys.ENTER)
+        except Exception:
+            print("Failed to Clear history")
+        
+        #close tab to clean local data
+        
+        curr_tab = self.driver.window_handles[0]
+        self.driver.execute_script('window.open("https://www.google.com")')
+        #logging.debug("Opening new tab")
+        self.driver.switch_to.window(window_name=curr_tab)
+        self.driver.close()
+        curr_tab = self.driver.window_handles[0]
+        self.driver.switch_to.window(window_name=curr_tab)
+
+       #Open a new window
+
+
+    def remove_profile_folder(self):
+        os.system("killall -KILL chrome") 
+        os.system("killall -KILL chromedriver") 
+        if os.path.exists(os.path.join(current_path,str(self.port_number))):
+            shutil.rmtree(os.path.join(current_path,str(self.port_number)))
+
+
 
     #Credits : https://stackoverflow.com/questions/48850974/selenium-scroll-to-end-of-page-indynamically-loading-webpage
     def scroll_bottom(self):
@@ -129,29 +154,6 @@ class RemoteSelenium():
             total_height = self.driver.execute_script(" return document.body.scrollHeight;")
             time.sleep(1)
 
-
-def clean_profile(remoteselenium = None):
-    remoteselenium.driver.get('https://example.com/')
-    remoteselenium.driver.delete_all_cookies()
-    remoteselenium.driver.get('chrome://settings/clearBrowserData')
-    sleep(3)
-    
-    try:
-        remoteselenium.driver.find_element_by_xpath('//settings-ui').send_keys(Keys.ENTER)
-    except Exception:
-        print("Failed to Clear history")
-    
-    #close tab to clean local data
-    
-    curr_tab = remoteselenium.driver.window_handles[0]
-    remoteselenium.driver.execute_script('window.open("https://www.google.com")')
-    #logging.debug("Opening new tab")
-    remoteselenium.driver.switch_to.window(window_name=curr_tab)
-    remoteselenium.driver.close()
-    curr_tab = remoteselenium.driver.window_handles[0]
-    remoteselenium.driver.switch_to.window(window_name=curr_tab)
-
-    #Open a new window
 
 
 def launch_chrome_development(google_command_string,override=False):
@@ -182,8 +184,7 @@ def list_availble_profiles():
 
 
 if __name__ == '__main__':
-    rs = RemoteSelenium(proxy_host='0.0.0.0',proxy_port='8080')
-    # rs.driver.execute_cdp_cmd('Network.setUserAgentOverride', {"userAgent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) QtWebEngine/5.14.0 Chrome/77.0.3865.129 Safari/537.36", "platform":"Windows"})
-    input('do tst')
+    rs = RemoteSelenium(headless=True)
     rs.driver.get('https://www.google.com')
-    rs.driver.get('https://www.quora.com')
+    print(rs.driver.page_source)
+    rs.remove_profile_folder()
