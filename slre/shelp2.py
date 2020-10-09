@@ -32,7 +32,7 @@ def copy_file_to_no_tk(copyto,replace_file = False,title_text = 'Choose File'):
     else:
         
 
-        c_driver = os.path.join(str(Path.home()),'chromedriver')
+        c_driver = os.path.join('/bin','chromedriver')
         cdriver = None
         with open(c_driver,'rb') as f:
             cdriver = f.read()
