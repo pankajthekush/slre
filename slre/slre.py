@@ -128,10 +128,15 @@ class RemoteSelenium():
 
 
     def remove_profile_folder(self):
+        os.system("killall -KILL chromedriver") 
         os.system("killall -KILL chrome") 
         os.system("killall -KILL chromedriver") 
+        os.system("killall -KILL chrome") 
         if os.path.exists(os.path.join(current_path,str(self.port_number))):
-            shutil.rmtree(os.path.join(current_path,str(self.port_number)))
+            try:
+                shutil.rmtree(os.path.join(current_path,str(self.port_number)))
+            except Exception:
+                print('could not remove profile')
 
 
 
