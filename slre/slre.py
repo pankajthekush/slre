@@ -18,6 +18,7 @@ import socket
 from shelp2 import copy_file_to_no_tk
 #import logging
 
+
 cmd_folder = os.path.realpath(os.path.abspath(os.path.split(inspect.getfile( inspect.currentframe() ))[0]))
 if cmd_folder not in sys.path:
     sys.path.insert(0, cmd_folder)
@@ -53,9 +54,9 @@ class RemoteSelenium():
             self.chrome_driver = os.path.join(current_path,str(port_number), 'driver', 'chromedriver')
             #google start commands
             if headless == False:
-                self.google_command_string = f'google-chrome --remote-debugging-port={self.port_number} --no-sandbox --allow-running-insecure-content --user-data-dir={self.chrome_profile}&'
+                self.google_command_string = f'google-chrome --remote-debugging-port={self.port_number} --no-sandbox --allow-running-insecure-content --no-first-run --user-data-dir={self.chrome_profile}&'
             else:
-                self.google_command_string = f'google-chrome --headless --remote-debugging-port={self.port_number} --no-sandbox --allow-running-insecure-content --user-data-dir={self.chrome_profile}&'
+                self.google_command_string = f'google-chrome --headless --remote-debugging-port={self.port_number} --no-sandbox --allow-running-insecure-content --no-first-run --user-data-dir={self.chrome_profile}&'
         else:
             #for windoes
             self.chrome_driver = os.path.join(current_path,str(port_number), 'driver', 'chromedriver.exe')
@@ -189,7 +190,7 @@ def list_availble_profiles():
 
 
 if __name__ == '__main__':
-    rs = RemoteSelenium(headless=True)
+    rs = RemoteSelenium()
     rs.driver.get('https://www.google.com')
     print(rs.driver.page_source)
     rs.remove_profile_folder()
