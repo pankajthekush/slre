@@ -16,6 +16,7 @@ import sys
 import shutil
 import socket
 from shelp2 import copy_file_to_no_tk
+from pathlib import Path
 #import logging
 
 
@@ -25,7 +26,7 @@ if cmd_folder not in sys.path:
 
 
 
-current_path = os.path.dirname(os.path.abspath(__file__))
+current_path =  str(Path.home())
 
 
     
@@ -49,24 +50,9 @@ class RemoteSelenium():
         self.proxy_host = proxy_host
         self.proxy_port = proxy_port
 
-        if sys.platform == 'linux':
-            #for linux
-            self.chrome_driver = os.path.join(current_path,str(port_number), 'driver', 'chromedriver')
-            #google start commands
-            if headless == False:
-                self.google_command_string = f'google-chrome --remote-debugging-port={self.port_number} --no-sandbox --allow-running-insecure-content --no-first-run --user-data-dir={self.chrome_profile}&'
-            else:
-                self.google_command_string = f'google-chrome --headless --remote-debugging-port={self.port_number} --no-sandbox --allow-running-insecure-content --no-first-run --user-data-dir={self.chrome_profile}&'
-        else:
-            #for windoes
-            self.chrome_driver = os.path.join(current_path,str(port_number), 'driver', 'chromedriver.exe')
-            
-            if headless == False:
-                self.google_command_string = f'START chrome.exe --remote-debugging-port={self.port_number} --user-data-dir={self.chrome_profile}'
-            else:
-                self.google_command_string = f'START chrome.exe --headless --disable-gpu --remote-debugging-port={self.port_number} --user-data-dir={self.chrome_profile}'
-
-        
+        self.chrome_driver = os.path.join(current_path,str(port_number), 'driver', 'chromedriver')
+        self.google_command_string = f'google-chrome --remote-debugging-port={self.port_number} --no-sandbox --allow-running-insecure-content --no-first-run  --disable-gpu --disable-software-rasterizer --user-data-dir={self.chrome_profile}&'
+             
         self.check_create_folders(profile_name=str(self.port_number))
         chrome_options = webdriver.ChromeOptions()
         chrome_options.add_experimental_option("debuggerAddress", f"127.0.0.1:{self.port_number}")
@@ -192,5 +178,6 @@ def list_availble_profiles():
 if __name__ == '__main__':
     rs = RemoteSelenium()
     rs.driver.get('https://www.google.com')
+    input('here')
     print(rs.driver.page_source)
     rs.remove_profile_folder()
