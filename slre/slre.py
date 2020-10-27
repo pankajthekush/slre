@@ -61,9 +61,12 @@ class RemoteSelenium():
         if self.proxy_host is not None:
             chrome_options.add_argument('--proxy-server={host}:{port}'.format(host=self.proxy_host, port=self.proxy_port))
 
-        print("Launching Chrome")
-        launch_chrome_development(self.google_command_string,override=True)
-        self.driver = webdriver.Chrome(self.chrome_driver, options=chrome_options)
+        try:
+            print("Assuming chrome already running, wait...")
+            self.driver = webdriver.Chrome(self.chrome_driver, options=chrome_options)  
+        except Exception:
+            launch_chrome_development(self.google_command_string,override=True)
+            self.driver = webdriver.Chrome(self.chrome_driver, options=chrome_options)
         
         
     def check_create_folders(self,profile_name):
@@ -178,6 +181,6 @@ def list_availble_profiles():
 if __name__ == '__main__':
     rs = RemoteSelenium()
     rs.driver.get('https://www.google.com')
-    input('here')
-    print(rs.driver.page_source)
-    rs.remove_profile_folder()
+    #input('here')
+    #print(rs.driver.page_source)
+    #rs.remove_profile_folder()
